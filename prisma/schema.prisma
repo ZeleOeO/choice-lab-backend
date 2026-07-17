@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// A single scene in the game, made up of an ordered set of dialogues.
+model Scene {
+  scene_id  Int        @id @default(autoincrement())
+  dialogues Dialogue[]
+
+  // Effects that load into this scene when they fire.
+  loaded_by Effect[]   @relation("EffectLoadScene")
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+/// A line of dialogue spoken by a character. May branch into choices.
+model Dialogue {
+  dialogue_id  Int     @id @default(autoincrement())
+  character_id Int?
+  text         String
+  is_choice    Boolean @default(false)
+
+  scene    Scene @relation(fields: [scene_id], references: [scene_id], onDelete: Cascade)
+  scene_id Int
+
+  // Self-relation: the dialogue that plays next when this one has no choices.
+  next_dialogue    Dialogue?  @relation("DialogueFlow", fields: [next_dialogue_id], references: [dialogue_id], onDelete: SetNull)
+  next_dialogue_id Int?
+  previous         Dialogue[] @relation("DialogueFlow")
+
+  choices Choice[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+/// A selectable option attached to a dialogue, optionally triggering an effect.
+model Choice {
+  choice_id Int    @id @default(autoincrement())
+  text      String
+
+  dialogue    Dialogue @relation(fields: [dialogue_id], references: [dialogue_id], onDelete: Cascade)
+  dialogue_id Int
+
+  effect    Effect? @relation(fields: [effect_id], references: [effects_id], onDelete: SetNull)
+  effect_id Int?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+/// The consequence of choosing an option: load a scene, jump to a dialogue,
+/// and/or mutate player state.
+model Effect {
+  effects_id Int @id @default(autoincrement())
+
+  // Scene to load when this effect fires.
+  load_scene    Scene? @relation("EffectLoadScene", fields: [load_scene_id], references: [scene_id], onDelete: SetNull)
+  load_scene_id Int?
+
+  // Dialogue to jump to when this effect fires.
+  pick_dialogue_id Int?
+
+  // Arbitrary player-state mutations, e.g. { "health": -10, "hasKey": true }.
+  player_state_change Json?
+
+  choices Choice[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}

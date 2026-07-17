@@ -6,6 +6,7 @@ dist/
 .env
 .env.*
 .env.local
+!.env.example
 
 *.log
 
@@ -16,3 +17,5 @@ Thumbs.db
 .idea/
 
 *.tsbuildinfo
+
+/src/generated/prisma
