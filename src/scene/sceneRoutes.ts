@@ -1,5 +1,5 @@
 import { Router } from "express";
-import * as sceneController from "../controllers/sceneController.ts"
+import * as sceneController from "./sceneController"
 
 const router = Router()
 

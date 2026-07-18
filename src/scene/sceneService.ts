@@ -1,4 +1,4 @@
-import { Scene } from "../models/sceneModel"
+import { Scene } from "./sceneModel"
 
 const scene_array: Scene[] = [
   { scene_id: 1, dialogues: { 1: "hello", 2: "howdy", 3: "sup", 4: "nigger" } },
