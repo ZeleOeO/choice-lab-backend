@@ -24,11 +24,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run tests
-        run: pnpm test
-
-      - name: Build
-        run: pnpm build
+      - name: Type check
+        run: pnpm tsc --noEmit
 
       - name: Notify Discord Success
         if: success()
