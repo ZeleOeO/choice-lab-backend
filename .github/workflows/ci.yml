@@ -27,34 +27,34 @@ jobs:
       - name: Type check
         run: pnpm tsc --noEmit
 
-      - name: Notify Discord Success
-        if: success()
-        run: |
-          curl -H "Content-Type: application/json" -d '{
-            "embeds": [{
-              "title": "✅ CI Passed",
-              "color": 65280,
-              "fields": [
-                { "name": "PR", "value": "#${{ github.event.pull_request.number }}", "inline": true },
-                { "name": "Author", "value": "${{ github.actor }}", "inline": true },
-                { "name": "Title", "value": "${{ github.event.pull_request.title }}" }
-              ],
-              "url": "${{ github.event.pull_request.html_url }}"
-            }]
-          }' ${{ secrets.DISCORD_WEBHOOK }}
+      # - name: Notify Discord Success
+      #   if: success()
+      #   run: |
+      #     curl -H "Content-Type: application/json" -d '{
+      #       "embeds": [{
+      #         "title": "✅ CI Passed",
+      #         "color": 65280,
+      #         "fields": [
+      #           { "name": "PR", "value": "#${{ github.event.pull_request.number }}", "inline": true },
+      #           { "name": "Author", "value": "${{ github.actor }}", "inline": true },
+      #           { "name": "Title", "value": "${{ github.event.pull_request.title }}" }
+      #         ],
+      #         "url": "${{ github.event.pull_request.html_url }}"
+      #       }]
+      #     }' ${{ secrets.DISCORD_WEBHOOK }}
 
-      - name: Notify Discord Failure
-        if: ${{ always() && failure() }}
-        run: |
-          curl -H "Content-Type: application/json" -d '{
-            "embeds": [{
-              "title": "❌ CI Failed",
-              "color": 16711680,
-              "fields": [
-                { "name": "PR", "value": "#${{ github.event.pull_request.number }}", "inline": true },
-                { "name": "Author", "value": "${{ github.actor }}", "inline": true },
-                { "name": "Title", "value": "${{ github.event.pull_request.title }}" }
-              ],
-              "url": "${{ github.event.pull_request.html_url }}"
-            }]
-          }' ${{ secrets.DISCORD_WEBHOOK }}
+      # - name: Notify Discord Failure
+      #   if: ${{ always() && failure() }}
+      #   run: |
+      #     curl -H "Content-Type: application/json" -d '{
+      #       "embeds": [{
+      #         "title": "❌ CI Failed",
+      #         "color": 16711680,
+      #         "fields": [
+      #           { "name": "PR", "value": "#${{ github.event.pull_request.number }}", "inline": true },
+      #           { "name": "Author", "value": "${{ github.actor }}", "inline": true },
+      #           { "name": "Title", "value": "${{ github.event.pull_request.title }}" }
+      #         ],
+      #         "url": "${{ github.event.pull_request.html_url }}"
+      #       }]
+      #     }' ${{ secrets.DISCORD_WEBHOOK }}
