@@ -1,0 +1,51 @@
+name: PR Notify
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review, closed]
+    branches:
+      - main
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    env:
+      ACTION: ${{ github.event.action }}
+
+    steps:
+      - name: Set embed title
+        id: title
+        run: |
+          if [ "$ACTION" = "opened" ]; then
+            echo "text=😆 New PR Opened" >> $GITHUB_OUTPUT
+            echo "color=3447003" >> $GITHUB_OUTPUT
+          elif [ "$ACTION" = "reopened" ]; then
+            echo "text=🤨 PR Reopened" >> $GITHUB_OUTPUT
+            echo "color=16753920" >> $GITHUB_OUTPUT
+          elif [ "$ACTION" = "ready_for_review" ]; then
+            echo "text=😼 PR Ready for Review" >> $GITHUB_OUTPUT
+            echo "color=16776960" >> $GITHUB_OUTPUT
+          elif [ "$ACTION" = "closed" ] && [ "${{ github.event.pull_request.merged }}" = "true" ]; then
+            echo "text=😝 PR Merged" >> $GITHUB_OUTPUT
+            echo "color=10181046" >> $GITHUB_OUTPUT
+          elif [ "$ACTION" = "closed" ]; then
+            echo "text=🫤 PR Closed" >> $GITHUB_OUTPUT
+            echo "color=10181046" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Notify Discord
+        run: |
+          curl -H "Content-Type: application/json" -d '{
+            "embeds": [{
+              "title": "${{ steps.title.outputs.text }}",
+              "color": ${{ steps.title.outputs.color }},
+              "fields": [
+                { "name": "PR", "value": "#${{ github.event.pull_request.number }}", "inline": true },
+                { "name": "Author", "value": "${{ github.actor }}", "inline": true },
+                { "name": "Title", "value": "${{ github.event.pull_request.title }}" }
+              ],
+              "url": "${{ github.event.pull_request.html_url }}"
+            }]
+          }' ${{ secrets.DISCORD_WEBHOOK }}
