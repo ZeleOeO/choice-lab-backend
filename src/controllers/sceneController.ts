@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express"
+import type { NextFunction, Request, Response } from "express"
 import * as userService from "../services/sceneService.ts"
 
 export const loadScene = (req: Request, res: Response, next: NextFunction) => {
